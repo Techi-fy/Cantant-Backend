@@ -1,0 +1,177 @@
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+        collections:
+          type: array
+        artworks:
+          type: array
+        favouriteArtworks:
+          type: array
+        followers:
+          type: array
+        following:
+          type: array
+        creations:
+          type: array
+        userName:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          type: string
+        bio:
+          type: string
+        profilePic:
+          type: string
+
+      example:
+        id: 612f2725e3ed690016e3b737
+        role: artist
+        collections: [6130b12c835c0f299a59e461, 6130b17099223d2b55ab44d2]
+        artworks: [6131ce52fffd835f0b3fdb09]
+        favouriteArtworks: [6131ce52fffd835f0b3fdb09]
+        followers: []
+        following: [6131f514fbc1ece64fc4d4e4]
+        creations: []
+        email: zain@yopmail.com
+        userName: zain
+        address: '0x9F2eFE7C38732BFb37Cd33b8C54B57cE0551fdF2'
+        bio: I am cool
+        profilePic: https://digidrip-dev.s3.us-west-1.amazonaws.com/612f2725e3ed690016e3b737/612f2725e3ed690016e3b737-profile-pic.png
+
+    Collection:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        owner:
+          type: string
+        coverImage:
+          type: string
+        collectionAddress:
+          type: string
+        profileImage:
+          type: string
+        description:
+          type: string
+        artworks:
+          type: array
+      example:
+        id: 61371e53a5e8c80016d05525
+        artworks: []
+        name: My Collection
+        owner: 613715f7a5e8c80016d054a7
+        coverImage: https://digidrip-dev.s3.us-west-1.amazonaws.com//collections/61371e53a5e8c80016d05525/cover
+        profileImage: https://digidrip-dev.s3.us-west-1.amazonaws.com//collections/61371e53a5e8c80016d05525/profile
+
+    Artwork:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        creater:
+          type: string
+        owner:
+          type: string
+        image:
+          type: string
+        price:
+          type: string
+        collectionId:
+          type: string
+        views:
+          type: string
+      example:
+        id: 613747cfcdec8033aca18dce
+        name: Grafitti
+        description: Artwork that blinds the eye
+        creater: 613715f7a5e8c80016d054a7
+        owner: 613715f7a5e8c80016d054a7
+        views: 0
+        price: 23
+        collectionId: 613739c6db7e4a2728326b1c
+
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+        expires:
+          type: string
+          format: date-time
+      example:
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZWJhYzUzNDk1NGI1NDEzOTgwNmMxMTIiLCJpYXQiOjE1ODkyOTg0ODQsImV4cCI6MTU4OTMwMDI4NH0.m1U63blB0MLej_WfB7yC2FTMnCziif9X8yzwDEfJXAg
+        expires: 2020-05-12T16:18:04.793Z
+
+    AuthTokens:
+      type: object
+      properties:
+        access:
+          $ref: '#/components/schemas/Token'
+        refresh:
+          $ref: '#/components/schemas/Token'
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+
+  responses:
+    DuplicateEmail:
+      description: Email already taken
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: Email already taken
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 401
+            message: Please authenticate
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 403
+            message: Forbidden
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: Not found
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
