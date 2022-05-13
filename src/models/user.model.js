@@ -10,7 +10,6 @@ const userSchema = mongoose.Schema(
     userName: {
       type: String,
       required: false,
-      unique: true,
       lowercase: true,
       trim: true
     },
@@ -34,6 +33,10 @@ const userSchema = mongoose.Schema(
           throw new Error('Invalid email');
         }
       },
+    },
+    isEmailVerified:{
+      type:Boolean,
+      default:false
     },
     phone:{
       type:String,
@@ -90,9 +93,7 @@ const userSchema = mongoose.Schema(
     business_name:{
       type:String
     },
-    business_type:{
-      type:String
-    },
+    business_type:Array,
     bank:{
       type:mongoose.SchemaTypes.ObjectId,
       ref:'Bank'
@@ -160,26 +161,26 @@ userSchema.statics.isUsernameTaken = async function (userName, excludeUserId) {
  * @param {string} password
  * @returns {Promise<boolean>}
  */
-// userSchema.methods.isPasswordMatch = async function (password) {
-//   const user = this;
-//   return await bcrypt.compare(password, user.password);
-// };
+userSchema.methods.isPasswordMatch = async function (password) {
+  const user = this;
+  return await bcrypt.compare(password, user.password);
+};
 
-// userSchema.pre('save', async function (next) {
-//   const user = this;
-//   if (user.isModified('password')) {
-//     user.password = await bcrypt.hash(user.password, 8);
-//   }
-//   next();
-// });
+userSchema.pre('save', async function (next) {
+  const user = this;
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+  next();
+});
 
-// userSchema.pre(['updateOne', 'findOneAndUpdate'], async function (next) {
-//   const user = this;
-//   if (this._update.password) {
-//     this._update.password = await bcrypt.hash(String(this._update.password), 8);
-//   }
-//   next();
-// });
+userSchema.pre(['updateOne', 'findOneAndUpdate'], async function (next) {
+  const user = this;
+  if (this._update.password) {
+    this._update.password = await bcrypt.hash(String(this._update.password), 8);
+  }
+  next();
+});
 /**
  * @typedef User
  */

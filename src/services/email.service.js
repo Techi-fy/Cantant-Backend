@@ -66,15 +66,16 @@ const sendEmail = async (msg) => {
  */
 const sendVerificationEmail = async (to, token) => {
   const code = Math.floor(1000+Math.random()*90000);
-  const verificationEmailUrl = `http://link-to-app/verify-email?token=${token}`;
+  const verificationEmailUrl = `http://localhost:3000/v1/auth/verify-email?token=${token}`;
   const msg = {
     to,
     from:config.email.from,
     subject : 'Email Verification',
-    text: `Dear user,
-    To verify your email, click on this link: ${token}
+    html: `<h1> Dear user! </h1>
+    <p style="font-family:verdana; font-size:160%; color:gray;">
+     To verify your email, click on this link: ${verificationEmailUrl}
     Or You can manually pass code for Email Verification: "${code}"
-    If you did not create an account, then ignore this email.`
+    If you did not create an account, then ignore this email. </p>`
 
   }
   await sendEmail(msg);

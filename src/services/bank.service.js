@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Service } = require('../models');
+const { Bank } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -7,9 +7,9 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} userBody 
  * @returns Object
  */
-const createService = async (userBody) => {
-      const service = await Service.create(userBody);
-      return service.toObject();
+const addBankAccount = async (userBody) => {
+      const bank = await Bank.create(userBody);
+      return bank.toObject();
 };
 
 /**
@@ -30,9 +30,9 @@ const createManyServices = async (services)=>{
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-const queryServices = async (filter, options) => {
-  const products = await Service.paginate(filter, options);
-  return products;
+const queryBankAccounts = async (filter, options) => {
+  const banks = await Bank.paginate(filter, options);
+  return banks;
 };
 
 /**
@@ -40,8 +40,8 @@ const queryServices = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<User>}
  */
-const getServiceById = async (id) => {
-  return await Service.findById(id).lean();
+const getBankAccountById = async (id) => {
+  return await Bank.findById(id).lean();
 };
 // /**
 //  * Get user by id
@@ -60,7 +60,7 @@ const getServiceById = async (id) => {
  * @param {Object} updateBody
  * @returns {Promise<Product>}
  */
-const updateServiceById = async (serviceId, updateBody) => {
+const updateBankAccountById = async (serviceId, updateBody) => {
   const service = await Service.findByIdAndUpdate(serviceId,updateBody, {
     new: true,
   });
@@ -69,19 +69,19 @@ const updateServiceById = async (serviceId, updateBody) => {
 
 /**
  * Delete product by id
- * @param {ObjectId} serviceId
+ * @param {ObjectId} accountId
  * @returns {Promise<User>}
  */
-const deleteServiceById = async (serviceId) => {
-  const service = await getServiceById(serviceId);
-  if (!service) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Service not found');
+const deleteBankAccountById = async (accountId) => {
+  const bankAccount = await getBankAccountById(accountId);
+  if (!bankAccount) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Account not found');
   }
-  await Service.findOneAndDelete(serviceId)
-  return service;
+  await Bank.findOneAndDelete(accountId)
+  return bankAccount;
 };
 
-const deleteServices = async (serviceIds)=>{
+const deleteBankAccounts = async (serviceIds)=>{
   const deleted = await Service.deleteMany({_id:{$in:serviceIds}});
   console.log(deleted);
   return deleted;
@@ -148,21 +148,13 @@ const deleteVariation = async ( query,)=>{
 }
 
 module.exports = {
-  createService,
+  addBankAccount,
   createManyServices,
-  queryServices,
-  getServiceById,
-  updateServiceById,
-  deleteServiceById,
-  deleteServices,
-  searchServicesByName,
-  addCategories,
-  addOption,
-  addVariation,
-  editOption,
-  deleteOption,
-  deleteVariation,
-  removeOptionValue,
-
+  queryBankAccounts,
+  getBankAccountById,
+  updateBankAccountById,
+  deleteBankAccountById,
+  deleteBankAccounts,
+  
 
 };

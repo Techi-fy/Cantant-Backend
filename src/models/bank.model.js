@@ -9,6 +9,10 @@ const bankSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref:'User',
     },
+    account_holder:{
+      type:String,
+      required:false
+    },
     bank_account:{
         type:String,
         required:false,
@@ -34,9 +38,8 @@ const bankSchema = mongoose.Schema(
 bankSchema.plugin(toJSON);
 bankSchema.plugin(paginate);
 
-
 /**
- * @typedef User
+ * @typedef Bank
  */
 const Bank = mongoose.model('Bank', bankSchema);
 

@@ -73,7 +73,6 @@ const verifyToken = async (token, type) => {
 const generateAuthTokens = async (user) => {
   // const expires = moment().add(config.jwt.accessExpirationMinutes, 'm');
   const expires = `${config.jwt.accessExpirationMinutes}m`
-  console.log(expires);
   const accessToken =await generateToken(user._id, expires, tokenTypes.ACCESS);
   await saveToken(accessToken, user._id, tokenTypes.ACCESS);
   return accessToken;

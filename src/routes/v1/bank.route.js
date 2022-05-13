@@ -2,33 +2,29 @@ const express = require('express');
 const {auth} = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 // const productValidation = require('../../validations/product.validation');
-const serviceController  = require('../../controllers/service.controller');
+const bankController = require('../../controllers/bank.controller');
 
 const router = express.Router();
 
 router.post('/create',
   // auth('manageUsers'), validate(userValidation.createUser),
-   serviceController.createService);
+   bankController.addBankAccount);
   
-router.get('/query',
+router.get('/all',
   // [auth('manageUsers'), validate(userValidation.getUsers)],
-  serviceController.getServices)
+   bankController.getBanks)
 
-// router.route('/:userId').delete(auth('manageUsers'), validate(userValidation.deleteUser), userController.getUser);
-router.get('/detail', 
+router.get('/details', 
 // validate(userValidation.getUser),
-  serviceController.getService);
+   bankController.getBank);
 
 router.put('/update',
 //  [auth('manageUsers'), validate(userValidation.updateUser)],
-  serviceController.updateService);
+   bankController.updateBank);
 
-router.delete('/delete',
+ router.delete('/delete',
 //  [auth('manageUsers'), validate(userValidation.updateUser)],
-  serviceController.deleteService);
-   
-  
+   bankController.deleteBank);
 
-  router.post('/saveExcelData',serviceController.saveExcelData)
    
 module.exports = router;

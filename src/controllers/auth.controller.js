@@ -10,13 +10,13 @@ const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
   const token = await tokenService.generateVerifyEmailToken(user);
-  const code = Math.floor(1000+Math.random()*90000);
-              await emailService.sendVerificationEmail(to,token,code);
-  res.status(httpStatus.OK).send({ user, tokens });
+  // const code = Math.floor(1000+Math.random()*90000);
+    await emailService.sendVerificationEmail(user.email,token);
+  res.status(httpStatus.OK).send({status:true, user, tokens });
 });
 
 const login = catchAsync(async (req, res) => {
-  const { address,email,password } = req.body;
+  const { email,password } = req.body;
   var user;
    if(email != undefined && password != undefined ){
     user = await authService.loginUserWithEmailAndPassword(email,password)
@@ -29,6 +29,7 @@ const login = catchAsync(async (req, res) => {
     const tokens = await tokenService.generateAuthTokens(user);
     res.send({
       status: true,
+      user:user._id,
       tokens
     });
   } else {

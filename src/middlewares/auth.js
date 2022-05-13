@@ -59,7 +59,7 @@ const roleAuthorization = async (req, res,requireRole) => {
   }
 };
 
-const getIdFromToken = async (req)=>{
+const getUserIdFromToken = async (req)=>{
   const reqToken = req.headers.authorization.split(' ')[1];
   const tokenfound = await Token.findOne({ token: reqToken })
     if (!tokenfound) {
@@ -67,9 +67,9 @@ const getIdFromToken = async (req)=>{
     }
     var user = await User.findOne(tokenfound.user)
     if(!user){
-      user = await Organization.findOne(tokenfound.user) 
+      throw new ApiError(httpStatus.NOT_FOUND, "User not found");
     }
-    return user;
+    return user._id;
 }
 
 const checkOrganizationRole = async (req, res) => {
@@ -100,9 +100,10 @@ const checkOrganizationRole = async (req, res) => {
   }
 };
 
+
 module.exports = {
   auth,
   roleAuthorization,
   checkOrganizationRole,
-  getIdFromToken,
+  getUserIdFromToken,
 };

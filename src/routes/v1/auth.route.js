@@ -61,7 +61,9 @@ const router = express.Router();
  *         $ref: '#/components/responses/DuplicateEmail'
  */
 
-router.post('/register', validate(authValidation.register), authController.register);
+router.post('/register', 
+//  validate(authValidation.register),
+    authController.register);
 /**
  * @swagger
  * /auth/login:
@@ -265,7 +267,9 @@ router.put('/blockUser/:userId',[validate(authValidation.blockUser)],authControl
 
 router.post('/send-verification-email', authController.sendVerificationEmail);
 
-router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
+router.post('/verify-email', 
+    // validate(authValidation.verifyEmail),
+     authController.verifyEmail);
 
 router.post('/verify-code', validate(authValidation.verifyCode), authController.verifyCode);
 

@@ -3,9 +3,7 @@ const authRoute = require('./auth.route');
 const userRoute = require('./user.route');
 const docsRoute = require('./docs.route');
 const generalRoute = require('./general.route');
-const productRoute = require('./product.route');
-const workspaceRoute = require('./workspace.route');
-const serviceRoute = require('./service.route');
+const bankRoute = require('./bank.route');
 
 
 const config = require('../../config/config');
@@ -26,17 +24,10 @@ const defaultRoutes = [
     route: generalRoute,
   },
   {
-    path: '/product',
-    route: productRoute,
+    path: '/bank',
+    route: bankRoute,
   },
-  {
-    path: '/services',
-    route: serviceRoute,
-  },
-  {
-    path: '/workspace',
-    route: workspaceRoute,
-  },
+  
   ];
 
 const devRoutes = [

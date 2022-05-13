@@ -66,7 +66,9 @@ router.get('/:userId', validate(userValidation.getUser), userController.getUser)
 //  *       "401":
 //  *         $ref: '#/components/responses/Unauthorized'
 //  */
-router.put('/:userId', [auth('manageUsers'), validate(userValidation.updateUser)], userController.updateUser);
+router.put('/:userId',
+// [auth('manageUsers'), validate(userValidation.updateUser)],
+   userController.updateUser);
 
 router.post('/addCategoryTest',
 [auth('manageUsers'), validate(userValidation.addCategoryVS)],
