@@ -238,6 +238,10 @@ router.put('/blockUser/:userId',[validate(authValidation.blockUser)],authControl
 
  router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
 
+ router.post('/change-password', 
+//  validate(authValidation.resetPassword),
+ authController.changePassword);
+
 // /**
 //  * @swagger
 //  * /auth/verify-email:

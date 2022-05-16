@@ -4,6 +4,7 @@ const userRoute = require('./user.route');
 const docsRoute = require('./docs.route');
 const generalRoute = require('./general.route');
 const bankRoute = require('./bank.route');
+const transactionRoute = require('./transaction.route');
 
 
 const config = require('../../config/config');
@@ -26,6 +27,10 @@ const defaultRoutes = [
   {
     path: '/bank',
     route: bankRoute,
+  },
+  {
+    path: '/transaction',
+    route: transactionRoute,
   },
   
   ];

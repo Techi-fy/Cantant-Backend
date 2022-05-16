@@ -40,6 +40,10 @@ const getUserById = async (id) => {
   return await User.findById(id).lean();
 };
 
+const getUserByfind = async (query) => {
+  return await User.findOne(query)
+};
+
 /**
  * Get user by email
  * @param {string} email
@@ -207,6 +211,7 @@ module.exports = {
   createUser,
   queryUsers,
   getUserById,
+  getUserByfind,
   getUserByEmail,
   updateUserByEmail,
   getUserByToken,

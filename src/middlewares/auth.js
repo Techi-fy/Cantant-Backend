@@ -60,16 +60,20 @@ const roleAuthorization = async (req, res,requireRole) => {
 };
 
 const getUserIdFromToken = async (req)=>{
-  const reqToken = req.headers.authorization.split(' ')[1];
-  const tokenfound = await Token.findOne({ token: reqToken })
-    if (!tokenfound) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, "UNAUTHORIZED! Token not found");
-    }
-    var user = await User.findOne(tokenfound.user)
-    if(!user){
-      throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-    }
-    return user._id;
+  try{
+    const reqToken = req.headers.authorization.split(' ')[1];
+    const tokenfound = await Token.findOne({ token: reqToken })
+      if (!tokenfound) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, "UNAUTHORIZED! Token not found");
+      }
+      var user = await User.findOne(tokenfound.user)
+      if(!user){
+        throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+      }
+      return user._id;
+  }catch(err){
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, err.message);
+  }
 }
 
 const checkOrganizationRole = async (req, res) => {

@@ -3,7 +3,7 @@ const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
 const { User } = require('../models');
-const { checkAdminRole} = require('../middlewares/auth');
+const { checkAdminRole,getUserIdFromToken} = require('../middlewares/auth');
 const ApiError = require('../utils/ApiError');
 
 const register = catchAsync(async (req, res) => {
@@ -118,6 +118,15 @@ const resetPassword = catchAsync(async (req, res) => {
     console.log(dbUser)
 });
 
+const changePassword = catchAsync(async (req,res)=>{
+    const user = await getUserIdFromToken(req);
+    const body = req.body
+    if(user){
+      await authService.changePassword(user,body)
+      res.status(httpStatus.OK).send({status:true,message:'Password Changed Successfully'})
+    }
+})
+
 const sendVerificationEmail = catchAsync(async (req,res)=>{
   const email = req.body.email
   const user = await userService.getUserByEmail(email);
@@ -139,6 +148,7 @@ module.exports = {
   forgotPassword,
   verifyCode,
   resetPassword,
+  changePassword,
   verifyEmail,
   sendVerificationEmail,
 };

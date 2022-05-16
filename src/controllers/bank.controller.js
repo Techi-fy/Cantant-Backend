@@ -11,9 +11,10 @@ const { NOTIFICATION_TYPE } = require('../utils/enums');
 const {roleAuthorization,getUserIdFromToken}=require('../middlewares/auth');
 
 const addBankAccount = catchAsync(async(req,res)=>{
-    const body = req.body;
+    let body = req.body;
     const user = await getUserIdFromToken(req);
     body.user = user
+    console.log(body);
     const bankAccount = await bankService.addBankAccount(body);
     // EVENT.emit('add-product-workspace',{
     //   productId:product._id,
@@ -55,7 +56,6 @@ const deleteBank = catchAsync(async (req, res) => {
   // });
   res.status(httpStatus.NO_CONTENT).send('Bank Account Deleted Successfully!');
 });
-
 
 
 module.exports = {

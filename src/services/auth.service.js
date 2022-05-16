@@ -83,6 +83,21 @@ const resetPassword = async (dbUser, code, newPassword) => {
   }
 };
 
+const changePassword = async (user,body)=>{
+  try{const getuser = await userService.getUserByfind({_id:user})
+  console.log(getuser);
+  if(!(await getuser.isPasswordMatch(body.currentPassword))){
+      throw new ApiError(httpStatus.UNAUTHORIZED,'Current Password Incorrect')
+  }else{
+    console.log("Iam In 92authService")
+    const updatedUser = await userService.updateUserById(user,{password:body.newPassword});
+    return updatedUser;
+  }
+}catch(err){
+  throw new ApiError(httpStatus.UNAUTHORIZED, err.message);
+}
+}
+
 const verifyCode = async (verifyEmailCode, email) => {
   const user = await userService.getUserByEmail(email);
   if(user?.code == verifyEmailCode){
@@ -113,6 +128,7 @@ const verifyEmail = async (verifyEmailToken) => {
 module.exports = {
   refreshAuth,
   resetPassword,
+  changePassword,
   verifyEmail,
   verifyCode,
   loginUserWithAddress,
