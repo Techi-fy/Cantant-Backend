@@ -16,7 +16,7 @@ const { tokenTypes } = require('../config/tokens');
 const loginUserWithEmailAndPassword = async (email, password) => {
   var user = await userService.getUserByEmail(email);
   if(user.isEmailVerified == false){
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Please Verify Your Email First');
+    throw new ApiError(true, 'Please Verify Your Email First');
   }
   if (!user || !(await user.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');

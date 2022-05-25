@@ -3,15 +3,16 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { transactionService } = require('../services');
-const { uploadToAws } = require('../utils/helpers');
+// const { uploadToAws } = require('../utils/helpers');
 const EVENT = require('../triggers/custom-events').customEvent;
-const { NOTIFICATION_TYPE } = require('../utils/enums');
-const {roleAuthorization,getUserIdFromToken}=require('../middlewares/auth');
+// const { NOTIFICATION_TYPE } = require('../utils/enums');
+// const {roleAuthorization,getUserIdFromToken}=require('../middlewares/auth');
 const { Product } = require('../models');
 
 const createTransaction = catchAsync(async (req,res)=>{
     const body = req.body;
-    const user =  await getUserIdFromToken(req);
+    const user =  req.query.userId 
+                  // || await getUserIdFromToken(req);
     body.user = user
     const transaction = await transactionService.createTransaction( body );
     // EVENT.emit('add-transaction-user',{
@@ -29,7 +30,7 @@ const queryTransaction = catchAsync(async (req, res) => {
 });
 
 const getTransaction = catchAsync(async (req, res) => {
-  const transaction = await transactionService.getTransactionById(req.query.workspaceId);
+  const transaction = await transactionService.getTransactionById(req.query.transactionId);
   if (!transaction) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Transaction not found');
   }

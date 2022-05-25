@@ -271,6 +271,8 @@ router.put('/blockUser/:userId',[validate(authValidation.blockUser)],authControl
 
 router.post('/send-verification-email', authController.sendVerificationEmail);
 
+router.post('/verify-phone',authController.verifyPhone)
+
 router.post('/verify-email', 
     // validate(authValidation.verifyEmail),
      authController.verifyEmail);

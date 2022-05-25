@@ -15,16 +15,16 @@ const createUser = catchAsync(async (req, res) => {
 });
 
 const getUsers = catchAsync(async (req, res) => {
-  const flag =await roleAuthorization(req,res,'admin');
-  console.log(flag);
-  if(flag.FLAG){
+  // const user =await userService.getUserById(req.query.requestId);
+  // console.log(flag);
+  // if(user.role == 'admin'){
     const filter = pick(req.query, ['name', 'role']);
     const options = pick(req.query, ['sortBy', 'limit', 'page']);
     const result = await userService.queryUsers(filter, options);
     res.status(httpStatus.OK).send(result);
-  }else{
-    res.status(httpStatus.UNAUTHORIZED).send('Not accessible due to restriction in role')
-  }
+  // }else{
+  //   res.status(httpStatus.UNAUTHORIZED).send('Not accessible due to restriction in role')
+  // }
 });
 
 const getUser = catchAsync(async (req, res) => {
@@ -41,7 +41,7 @@ const updateUser = catchAsync(async (req, res) => {
     req.body.profilePic = img.Location;
   }
   const user = await userService.updateUserById(req.params.userId, req.body);
-  res.send(user);
+  res.send({status:true,user});
 });
 
 const deleteUser = catchAsync(async (req, res) => {
@@ -139,6 +139,8 @@ const addUserCategory = catchAsync(async (req,res)=>{
   res.status(httpStatus.OK).send({message:'Sucessfull',info:'UPDATED SUCESSFULLY',category})
 })
 
+
+
 module.exports = {
   createUser,
   getUsers,
@@ -150,5 +152,5 @@ module.exports = {
   getUserFollowing,
   getUserFollowers,
   addUserCategory,
-
+  
 };

@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
-const { User } = require('../models');
+const {sendOTPviaSMS} = require('../utils/helpers')
 const { checkAdminRole,getUserIdFromToken} = require('../middlewares/auth');
 const ApiError = require('../utils/ApiError');
 
@@ -25,18 +25,18 @@ const login = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST,'Please Verify Your Email');
   }
   if (user){
-    await tokenService.removeToken(user);
-    const tokens = await tokenService.generateAuthTokens(user);
+    // await tokenService.removeToken(user);
+    // const tokens = await tokenService.generateAuthTokens(user);
     res.send({
       status: true,
       user:user._id,
-      tokens
+      // tokens
     });
   } else {
     res.send({
       status: false,
       user: null,
-      tokens: null,
+      // tokens: null,
       message: 'No user found',
     });
   }
@@ -50,13 +50,14 @@ const logout = catchAsync(async (req, res) => {
 });
 
 const blockUser = catchAsync(async (req,res,next)=>{
-  const isAdmin = await checkAdminRole(req,res);
-  if(isAdmin == true){
+  // const isAdmin = await checkAdminRole(req,res);
+  
+  // if(isAdmin == true){
     const user = await userService.updateUserById(req.params.userId, req.body);
     res.send(`user blocked Status: ${user.isblock}`); 
-  }else{
-    res.status(httpStatus.UNAUTHORIZED).send('Role is not Admin of requested User!');
-  }
+  // }else{
+  //   res.status(httpStatus.UNAUTHORIZED).send('Role is not Admin of requested User!');
+  // }
 }) 
 
 const forgotPassword = catchAsync(async (req, res) => {
@@ -140,6 +141,15 @@ const verifyEmail = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send("Email Verified!");
 });
 
+
+
+const verifyPhone = catchAsync(async (req,res)=>{
+  console.log('verifyPhone');
+  const {phoneNumber,OTP} = req.body;
+   await sendOTPviaSMS(phoneNumber,OTP);
+  res.status(httpStatus.OK).send({status:true,message:`OTP sent to Phone Number:${phoneNumber} , Please check your SMS inbox!`})
+})
+
 module.exports = {
   register,
   login,
@@ -150,5 +160,6 @@ module.exports = {
   resetPassword,
   changePassword,
   verifyEmail,
+  verifyPhone,
   sendVerificationEmail,
 };
