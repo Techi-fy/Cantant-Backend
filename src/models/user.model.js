@@ -34,13 +34,13 @@ const userSchema = mongoose.Schema(
         }
       },
     },
-    isEmailVerified:{
+    isPhoneVerified:{
       type:Boolean,
       default:false
     },
-    phone:{
+    phone_number:{
       type:String,
-      required:false
+      required:true
     },
     profilePic: {
       type: String,
@@ -124,12 +124,12 @@ userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
 
 /**
  * Check if phone is taken
- * @param {string} phone - The user's phone
+ * @param {string} phone_number - The user's phone
  * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
  * @returns {Promise<boolean>}
  */
-userSchema.statics.isPhoneTaken = async function (phone, excludeUserId) {
-  const user = await this.findOne({ phone, _id: { $ne: excludeUserId } });
+userSchema.statics.isPhoneTaken = async function (phone_number, excludeUserId) {
+  const user = await this.findOne({ phone_number, _id: { $ne: excludeUserId } });
   return !!user;
 };
 /**
