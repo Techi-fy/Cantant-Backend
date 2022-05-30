@@ -23,12 +23,19 @@ const createTransaction = catchAsync(async (req,res)=>{
 })
 
 const queryTransaction = catchAsync(async (req, res) => {
+    const {category,date} = req.query
     const filter = pick(req.query, [ 'fullname', 'business_type' , 'cashIn', 'cashOut','category' ]);
     const options = pick(req.query, [ 'sortBy', 'limit' , 'page' , 'perPage' ]);
     const result = await transactionService.queryTransactions(filter, options);
-    res.status(httpStatus.OK).send(result);
+    let filtered = []
+    if(date){
+      filtered = result.results.filter(transaction=>{
+        if (transaction.date >= date){
+          return transaction
+        }})
+    }
+    res.status(httpStatus.OK).send(filtered);
 });
-
 
 
 const getTransaction = catchAsync(async (req, res) => {
@@ -51,7 +58,7 @@ const getTransactionByUser = catchAsync(async (req, res) => {
   if (!transaction) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Transaction not found');
   }
-  res.status(httpStatus.OK).send({ status: true, message: 'Successfull', transaction });
+  res.status(httpStatus.OK).send({ status: true, message: 'Successfull', transaction }); 
 });
 
 const updateTransaction = catchAsync(async (req, res) => {
