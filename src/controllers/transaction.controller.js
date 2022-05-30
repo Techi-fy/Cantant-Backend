@@ -23,11 +23,13 @@ const createTransaction = catchAsync(async (req,res)=>{
 })
 
 const queryTransaction = catchAsync(async (req, res) => {
-    const filter = pick(req.query, [ 'fullname', 'business_type' , 'cashIn', 'cashOut' ]);
+    const filter = pick(req.query, [ 'fullname', 'business_type' , 'cashIn', 'cashOut','category' ]);
     const options = pick(req.query, [ 'sortBy', 'limit' , 'page' , 'perPage' ]);
     const result = await transactionService.queryTransactions(filter, options);
     res.status(httpStatus.OK).send(result);
 });
+
+
 
 const getTransaction = catchAsync(async (req, res) => {
   const transaction = await transactionService.getTransactionById(req.query.transactionId);
@@ -36,6 +38,13 @@ const getTransaction = catchAsync(async (req, res) => {
   }
   res.send({ status: true, message: 'Successfull', transaction });
 });
+
+const countTransactions = catchAsync(async (req,res)=>{
+  const count = await transactionService.countTransactions(req.query);
+  const transactions = await transactionService.countTotal()
+  res.status(httpStatus.OK).send({status:true,count,transactions});
+
+})
 
 const getTransactionByUser = catchAsync(async (req, res) => {
   const transaction = await transactionService.getTransactionByUser(req.query.userId);
@@ -65,6 +74,7 @@ module.exports = {
   queryTransaction,
   getTransaction,
   getTransactionByUser,
+  countTransactions,
   updateTransaction,
   deleteTransaction,
 

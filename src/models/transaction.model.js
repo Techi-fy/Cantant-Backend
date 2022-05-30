@@ -11,7 +11,7 @@ const transactionSchema = mongoose.Schema({
         ref:'Bank',
     },
     amount:{
-        type:String
+        type:Number
     },
     date:String,
     time:String,

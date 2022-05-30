@@ -39,6 +39,53 @@ const getTransactionByUser = async (id) => {
   return await Transaction.find({user:id});
 };
 
+const countTransactions = async (filter)=>{
+  // const prev = new Date(filter.Date);
+  // console.log(newDate);
+  // const filterDate = newDate.toISOString()
+  // console.log(filterDate);
+  const prev = new Date(new Date().setDate(0)).toISOString();
+  console.log(prev);
+
+  const totalCashOut = await Transaction.aggregate([
+    {$match:{
+       date:{$lte: filter.date},
+       cashOut:true
+    }},
+    {$group:{
+          _id:null,cashOut:{$sum:"$amount"}
+          // _id:"$cashOut",totalCash:{$sum:"$amount"}
+          }
+    },
+    // {
+    //   $count:"Total Transaction in duration"
+    // }
+])
+  const totalCashIn = await Transaction.aggregate([
+    {$match:{
+       cashIn:true,
+       date:{$lte: filter.date},
+    }},
+    {$group:{
+          _id:null,cashIn:{$sum:"$amount"}
+          // _id:"$cashOut",totalCash:{$sum:"$amount"}
+          }
+    },
+])
+const totalCashInAndOut = {
+  totalCashIn,
+  totalCashOut
+}
+  return totalCashInAndOut;
+}
+
+const countTotal = async ()=>{
+  const totalTransactions = await Transaction.find().then(count=>{return count.length});
+  const unCategorizedTransactions = await Transaction.find({category:null}).then(count=>{return count.length});
+  const count = {totalTransactions,unCategorizedTransactions}
+  return count;
+}
+
 /**
  * Update user by id
  * @param {ObjectId} productId
@@ -88,5 +135,6 @@ module.exports = {
   deleteTransactions,
   searchTransactionsByName,
   getTransactionByUser,
-
+  countTransactions,
+  countTotal
 };

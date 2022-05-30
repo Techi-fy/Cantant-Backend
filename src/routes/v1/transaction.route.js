@@ -10,6 +10,8 @@ router.post('/add',transactionController.createTransaction)
 
 router.get('/query',transactionController.queryTransaction)
 
+router.get('/count',transactionController.countTransactions)
+
 router.get('/getByUser',transactionController.getTransactionByUser)
 
 router.put('/update',transactionController.updateTransaction)
