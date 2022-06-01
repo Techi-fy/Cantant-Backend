@@ -165,7 +165,8 @@ const reports = async (query)=>{
     cashInSum,
     cashOutSum,
     totalProfit,
-    ranking
+    ranking,
+    transactions
   }
   return reportObj;
 }
