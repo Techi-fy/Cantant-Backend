@@ -1,7 +1,8 @@
 const httpStatus = require('http-status');
 const { Transaction } = require('../models');
 const ApiError = require('../utils/ApiError');
-
+const moment = require('moment');
+const { transactionService } = require('.');
 /**
  * 
  * @param {Object} userBody 
@@ -86,6 +87,89 @@ const countTotal = async ()=>{
   return count;
 }
 
+const reports = async (query)=>{
+  let startof ;
+  let endof;
+  let aggregationMatchQuery = {};
+  let transactionQuery = {}
+
+  const dateSet = moment().set({'year':query.year,'month':query.month});
+  if(query.year){
+    startof = moment().startOf('year')
+    endof = moment(dateSet).endOf('year')
+  }
+  if(query.year && query.month){
+    startof = moment().startOf('month')
+    endof = moment(dateSet).endOf('month')
+  }
+  if(query.year && query.month && query.date){
+    startof = moment().startOf('date');
+    endof = moment(dateSet).endOf('date');
+  }
+  if(query.cashIn){
+    // console.log("cashIn",query.cashIn);
+     transactionQuery = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},cashIn:true}
+      aggregationMatchQuery = {"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashIn":true}
+    }
+  if(query.cashOut){
+    // console.log("cashOut",query.cashOut);
+     transactionQuery = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},cashOut:true};
+     aggregationMatchQuery = {"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashOut":true}
+    }
+  if(!query.cashIn && !query.cashOut){
+    // console.log("Cashflow")
+    transactionQuery =  {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}}
+    aggregationMatchQuery = {"createdAt":{$gte:new Date(startof),$lt:new Date(endof)}}
+  }
+   let transactions = await Transaction.find(transactionQuery)
+  let cashInSum = 0
+  let cashOutSum = 0
+  for(let transaction of transactions){
+    if(transaction.cashIn == true){
+      cashInSum += transaction.amount 
+    }
+    if(transaction.cashOut == true){
+      cashOutSum += transaction.amount 
+      }
+    }
+    
+    const totalProfit = cashInSum - cashOutSum
+    const nums = await Transaction.countDocuments()
+    const ranking = await Transaction.aggregate(
+      [
+        {
+          "$match":aggregationMatchQuery
+        },
+        // Grouping pipeline
+          { "$group": { 
+              "_id": '$category', 
+              "count": { "$sum": 1 },
+              "totalAmount":{$sum:"$amount"},              
+          }},
+          // Project group pipeline for percentage 
+          { 
+            "$project": {
+              "count": 1,
+            "percentage": {
+                     "$multiply":[{"$divide":["$count",{"$literal": nums }]},100]
+                        }, 
+            "totalAmount":1 
+          }},
+          // Sorting pipeline
+          { "$sort": { "count": -1 } },
+          // Optionally limit results
+          { "$limit": 5 },
+      ]
+  );
+  const reportObj = {
+    cashInSum,
+    cashOutSum,
+    totalProfit,
+    ranking
+  }
+  return reportObj;
+}
+
 /**
  * Update user by id
  * @param {ObjectId} productId
@@ -136,5 +220,6 @@ module.exports = {
   searchTransactionsByName,
   getTransactionByUser,
   countTransactions,
+  reports,
   countTotal
-};
+}
