@@ -98,28 +98,39 @@ const graphTransaction = async (query)=>{
     startof = moment().startOf('year')
     endof = moment(dateSet).endOf('year')
   }
+  aggregationMatchQuery = {"user":new ObjectId(`${user}`),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)}}
   if(query.cashIn){
     aggregationMatchQuery = {"user":new ObjectId(`${user}`),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashIn":true}
     }
   if(query.cashOut){
      aggregationMatchQuery = {"user":new ObjectId(user),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashOut":true}
     }
+    console.log(aggregationMatchQuery);
   const getMonthsProfit = await Transaction.aggregate([
     { 
       "$match":aggregationMatchQuery
     },
     {
-        "$group":{
-        "_id":{"month":{"$month":"$createdAt"}},
+        "$project":{
+        "month":{"$month":"$createdAt"},
+        "cashInAmount":{"$cond":{if:{"$eq":["$cashIn" , true]},then:{"$sum":"$amount"},else:0}},
+        "cashOutAmount":{"$cond":{if:{"$eq":["$cashOut" , true]},then:{"$sum":"$amount"},else:0}},
+        // "cashInAmount":{"$cashOut":{"$sum":"$amount"}},
         "totalAmount":{"$sum":"$amount"}},
       },
-   
-        // "$group":{
-        //     "_id":{"cashOut":"$cashOut",
-        //     "$month":"$createdAt"},
-        //     "cashOutProfit":{"$sum":"$amount"}
-        //   },
-       
+      {
+        "$group":{
+            "_id":{"month":"$month"},
+            "totalCashIn":{"$sum":"$cashInAmount"},
+            "totalCashOut":{"$sum":"$cashOutAmount"},
+          },
+          
+        },
+        {
+          "$addFields":{
+            "monthProfit": { "$subtract": ["$totalCashIn", "$totalCashOut"] }
+          }
+        }
   ])
   console.log(getMonthsProfit);
   return getMonthsProfit;
@@ -204,7 +215,6 @@ const reports = async (query)=>{
     cashOutSum,
     totalProfit,
     ranking,
-    transactions
   }
   return reportObj;
 }
