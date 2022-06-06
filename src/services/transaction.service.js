@@ -3,6 +3,7 @@ const { Transaction } = require('../models');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
 const { transactionService } = require('.');
+var ObjectId = require('mongodb').ObjectID;
 /**
  * 
  * @param {Object} userBody 
@@ -86,13 +87,49 @@ const countTotal = async ()=>{
   const count = {totalTransactions,unCategorizedTransactions}
   return count;
 }
-
+const graphTransaction = async (query)=>{
+  let startof ;
+  let endof;
+  let aggregationMatchQuery = {};
+  const {cashIn,cashOut,year,user} = query;
+  const dateSet = moment().set({'year':year,'month':query.month});
+  
+  if(query.year){
+    startof = moment().startOf('year')
+    endof = moment(dateSet).endOf('year')
+  }
+  if(query.cashIn){
+    aggregationMatchQuery = {"user":new ObjectId(`${user}`),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashIn":true}
+    }
+  if(query.cashOut){
+     aggregationMatchQuery = {"user":new ObjectId(user),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashOut":true}
+    }
+  const getMonthsProfit = await Transaction.aggregate([
+    { 
+      "$match":aggregationMatchQuery
+    },
+    {
+        "$group":{
+        "_id":{"month":{"$month":"$createdAt"}},
+        "totalAmount":{"$sum":"$amount"}},
+      },
+   
+        // "$group":{
+        //     "_id":{"cashOut":"$cashOut",
+        //     "$month":"$createdAt"},
+        //     "cashOutProfit":{"$sum":"$amount"}
+        //   },
+       
+  ])
+  console.log(getMonthsProfit);
+  return getMonthsProfit;
+}
 const reports = async (query)=>{
   let startof ;
   let endof;
   let aggregationMatchQuery = {};
   let transactionQuery = {}
-
+  let {user} = query
   const dateSet = moment().set({'year':query.year,'month':query.month});
   if(query.year){
     startof = moment().startOf('year')
@@ -108,19 +145,20 @@ const reports = async (query)=>{
   }
   if(query.cashIn){
     // console.log("cashIn",query.cashIn);
-     transactionQuery = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},cashIn:true}
-      aggregationMatchQuery = {"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashIn":true}
+     transactionQuery = {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},cashIn:true}
+      aggregationMatchQuery = {"user":new ObjectId(user),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashIn":true}
     }
   if(query.cashOut){
     // console.log("cashOut",query.cashOut);
-     transactionQuery = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},cashOut:true};
-     aggregationMatchQuery = {"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashOut":true}
+     transactionQuery = {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},cashOut:true};
+     aggregationMatchQuery = {"user":new ObjectId(user),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashOut":true}
     }
   if(!query.cashIn && !query.cashOut){
     // console.log("Cashflow")
-    transactionQuery =  {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}}
-    aggregationMatchQuery = {"createdAt":{$gte:new Date(startof),$lt:new Date(endof)}}
+    transactionQuery =  {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}}
+    aggregationMatchQuery = {"user":new ObjectId(user),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)}}
   }
+  
    let transactions = await Transaction.find(transactionQuery)
   let cashInSum = 0
   let cashOutSum = 0
@@ -222,5 +260,6 @@ module.exports = {
   getTransactionByUser,
   countTransactions,
   reports,
+  graphTransaction,
   countTotal
 }

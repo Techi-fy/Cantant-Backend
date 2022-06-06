@@ -14,6 +14,8 @@ router.get('/count',transactionController.countTransactions)
 
 router.get('/report',transactionController.reportTransaction)
 
+router.get('/graph',transactionController.graphProfitTransaction)
+
 router.get('/getByUser',transactionController.getTransactionByUser)
 
 router.put('/update',transactionController.updateTransaction)

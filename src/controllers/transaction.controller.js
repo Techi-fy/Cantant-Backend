@@ -60,10 +60,17 @@ const getTransactionByUser = catchAsync(async (req, res) => {
   }
   res.status(httpStatus.OK).send({ status: true, message: 'Successfull', transaction }); 
 });
+
 const reportTransaction = catchAsync(async (req,res)=>{
   const cashFlow = await transactionService.reports(req.query)
   res.status(httpStatus.OK).send({status:true, cashFlow})
 })
+
+const graphProfitTransaction = catchAsync(async (req,res)=>{
+  const cashFlow = await transactionService.graphTransaction(req.query)
+  res.status(httpStatus.OK).send({status:true, cashFlow})
+})
+
 const updateTransaction = catchAsync(async (req, res) => {
   const body = req.body;
 const transaction = await transactionService.updateTransactionById(req.query.transactionId, body );
@@ -86,6 +93,7 @@ module.exports = {
   getTransactionByUser,
   countTransactions,
   reportTransaction,
+  graphProfitTransaction,
   updateTransaction,
   deleteTransaction,
 
