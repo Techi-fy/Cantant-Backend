@@ -6,10 +6,12 @@ const fs = require('fs');
 const ApiError = require('./ApiError');
 const httpStatus = require('http-status');
 const stripe = require('stripe')("sk_test_51KJuebHtbJyHQFQJL1OWBxK2numyPgWsaF6nCZSVMCDb11AFezCZTUTZHuUl5wAWl51N439WuLWgssgfQ8hwzslF00wNKONZEN")
+
 const accountSid = 'AC1a4fefaa7a75890832e86f7f165dab72'; 
 // const authToken = '[Redacted]';
 const authToken = 'a111283afa215463634e46891b8f4536';
 const client = require('twilio')(accountSid, authToken); 
+
 
 
 const uploadToAws = (photo, path) => {
@@ -71,9 +73,14 @@ client.messages
       .done();
 }
 
+const verifyNuban = async (params)=>{
+
+}
+
 module.exports = {
   uploadToAws,
   deleteFromAWS,
   sendOTPviaSMS,
+  verifyNuban,
 
 };

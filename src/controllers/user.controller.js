@@ -3,7 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { userService } = require('../services');
-const { uploadToAws } = require('../utils/helpers');
+const { uploadToAws,verifyNubanviaOkra } = require('../utils/helpers');
 const EVENT = require('../triggers/custom-events').customEvent;
 const { NOTIFICATION_TYPE } = require('../utils/enums');
 const {roleAuthorization}=require('../middlewares/auth')
@@ -140,7 +140,8 @@ const addUserCategory = catchAsync(async (req,res)=>{
 })
 
 const verifyNuban = catchAsync(async (req,res)=>{
-  
+  const nubanVerified = await verifyNubanviaOkra(req.body);
+  res.status(httpStatus.OK).send({status:true,nubanVerified})
 })
 
 
@@ -155,5 +156,6 @@ module.exports = {
   getUserFollowing,
   getUserFollowers,
   addUserCategory,
+  verifyNuban
   
 };
