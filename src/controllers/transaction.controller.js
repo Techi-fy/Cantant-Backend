@@ -48,7 +48,7 @@ const getTransaction = catchAsync(async (req, res) => {
 
 const countTransactions = catchAsync(async (req,res)=>{
   const count = await transactionService.countTransactions(req.query);
-  const transactions = await transactionService.countTotal()
+  const transactions = await transactionService.countTotal(req.query)
   res.status(httpStatus.OK).send({status:true,count,transactions});
 
 })

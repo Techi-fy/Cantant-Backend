@@ -139,6 +139,9 @@ const addUserCategory = catchAsync(async (req,res)=>{
   res.status(httpStatus.OK).send({message:'Sucessfull',info:'UPDATED SUCESSFULLY',category})
 })
 
+const verifyNuban = catchAsync(async (req,res)=>{
+  
+})
 
 
 module.exports = {

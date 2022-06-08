@@ -24,6 +24,9 @@ const createTransaction = async (userBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryTransactions = async (filter, options) => {
+  if(filter.date){
+
+  }
   const transactions = await Transaction.paginate(filter, options);
   return transactions;
 };
@@ -41,32 +44,57 @@ const getTransactionByUser = async (id) => {
   return await Transaction.find({user:id});
 };
 
-const countTransactions = async (filter)=>{
-  // const prev = new Date(filter.Date);
-  // console.log(newDate);
-  // const filterDate = newDate.toISOString()
-  // console.log(filterDate);
-  const prev = new Date(new Date().setDate(0)).toISOString();
-  console.log(prev);
 
+function getDesiredDate(date){
+  let startof;
+  let endof; 
+  let query={};
+  if(date == 'today'){
+    startof = moment().startOf('day');
+    endof = moment().endOf('day');
+    query = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
+  }
+  if(date == 'week'){
+    startof = moment().startOf('week');
+    endof = moment().endOf('week');
+    query = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
+  }
+  if(date == 'month'){
+    startof = moment().startOf('month');
+    endof = moment().endOf('month');
+    query = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
+  }
+  if(date == 'year'){
+    startof = moment().startOf('year');
+    endof = moment().endOf('year');
+    query = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
+  }
+  return {startof,endof,query} ;
+}
+
+/**
+ * 
+ * @param {object} filter 
+ * @returns object
+ */
+const countTransactions = async (filter)=>{
+  const {date} = filter
+  const {startof,endof} = getDesiredDate(date);
   const totalCashOut = await Transaction.aggregate([
     {$match:{
-       date:{$lte: filter.date},
+       createdAt:{$gte: new Date(startof),$lt:new Date(endof)},
        cashOut:true
     }},
     {$group:{
           _id:null,cashOut:{$sum:"$amount"}
-          // _id:"$cashOut",totalCash:{$sum:"$amount"}
           }
     },
-    // {
-    //   $count:"Total Transaction in duration"
-    // }
-])
+  ])
+
   const totalCashIn = await Transaction.aggregate([
     {$match:{
+       createdAt:{$gte: new Date(startof),$lt:new Date(endof)},
        cashIn:true,
-       date:{$lte: filter.date},
     }},
     {$group:{
           _id:null,cashIn:{$sum:"$amount"}
@@ -74,6 +102,7 @@ const countTransactions = async (filter)=>{
           }
     },
 ])
+
 const totalCashInAndOut = {
   totalCashIn,
   totalCashOut
@@ -81,12 +110,21 @@ const totalCashInAndOut = {
   return totalCashInAndOut;
 }
 
-const countTotal = async ()=>{
-  const totalTransactions = await Transaction.find().then(count=>{return count.length});
-  const unCategorizedTransactions = await Transaction.find({category:null}).then(count=>{return count.length});
-  const count = {totalTransactions,unCategorizedTransactions}
+
+const countTotal = async (filter)=>{
+  const {date} = filter
+  const {startof,endof,query} = getDesiredDate(date);
+    let unCategorizedQuery = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},
+                              category:null}
+  const totalTransactionDetails = await Transaction.find(query)
+  const unCategorizedTransactionDetails = await Transaction.find(unCategorizedQuery);
+    const count = { totalTransactions:totalTransactionDetails.length,
+                    unCategorizedTransactions:unCategorizedTransactionDetails.length,
+                    totalTransactionDetails, unCategorizedTransactionDetails }
   return count;
 }
+
+
 const graphTransaction = async (query)=>{
   let startof ;
   let endof;
@@ -132,9 +170,10 @@ const graphTransaction = async (query)=>{
           }
         }
   ])
-  console.log(getMonthsProfit);
   return getMonthsProfit;
 }
+
+
 const reports = async (query)=>{
   let startof ;
   let endof;
@@ -218,6 +257,7 @@ const reports = async (query)=>{
   }
   return reportObj;
 }
+
 
 /**
  * Update user by id

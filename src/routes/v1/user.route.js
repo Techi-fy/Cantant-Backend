@@ -242,6 +242,6 @@ router.post('/addCategoryTest',
 //   userController.getUserFollowing
 // );
 
-
+router.post('/verify-nuban',userController.verifyNuban);
 
 module.exports = router;
