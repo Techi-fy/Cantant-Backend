@@ -141,6 +141,7 @@ const addUserCategory = catchAsync(async (req,res)=>{
 
 const verifyNuban = catchAsync(async (req,res)=>{
   const nubanVerified = await verifyNubanviaOkra(req.body);
+  
   res.status(httpStatus.OK).send({status:true,nubanVerified})
 })
 

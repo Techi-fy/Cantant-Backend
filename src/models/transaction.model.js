@@ -10,6 +10,8 @@ const transactionSchema = mongoose.Schema({
         type:mongoose.SchemaTypes.ObjectId,
         ref:'Bank',
     },
+    transaction_type:{type:String,
+                        enum:['bank','cash']},
     amount:{
         type:Number
     },

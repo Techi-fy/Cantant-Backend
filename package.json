@@ -51,6 +51,7 @@
     "@ethereumjs/common": "^2.6.4",
     "@pinata/sdk": "^1.1.23",
     "@sendgrid/mail": "^7.4.5",
+    "api": "^4.5.1",
     "append-field": "^2.0.0",
     "aws-sdk": "^2.964.0",
     "bcryptjs": "^2.4.3",
