@@ -18,8 +18,9 @@ const transactionSchema = mongoose.Schema({
     product:String,
     service:String,
     category:String,
-    cashIn:Boolean,
-    cashOut:Boolean,
+    cashIn:{type:Boolean,default:false},
+    cashOut:{type:Boolean,default:false},
+    
 
 },{
     timestamps : true

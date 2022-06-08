@@ -45,29 +45,29 @@ const getTransactionByUser = async (id) => {
 };
 
 
-function getDesiredDate(date){
+function getDesiredDate(date,user){
   let startof;
   let endof; 
   let query={};
   if(date == 'today'){
     startof = moment().startOf('day');
     endof = moment().endOf('day');
-    query = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
+    query = {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
   }
   if(date == 'week'){
     startof = moment().startOf('week');
     endof = moment().endOf('week');
-    query = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
+    query = {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
   }
   if(date == 'month'){
     startof = moment().startOf('month');
     endof = moment().endOf('month');
-    query = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
+    query = {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
   }
   if(date == 'year'){
     startof = moment().startOf('year');
     endof = moment().endOf('year');
-    query = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
+    query = {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}};
   }
   return {startof,endof,query} ;
 }
@@ -78,10 +78,11 @@ function getDesiredDate(date){
  * @returns object
  */
 const countTransactions = async (filter)=>{
-  const {date} = filter
-  const {startof,endof} = getDesiredDate(date);
+  const {date,user} = filter
+  const {startof,endof} = getDesiredDate(date,user);
   const totalCashOut = await Transaction.aggregate([
     {$match:{
+        user:new ObjectId(user),
        createdAt:{$gte: new Date(startof),$lt:new Date(endof)},
        cashOut:true
     }},
@@ -93,6 +94,7 @@ const countTransactions = async (filter)=>{
 
   const totalCashIn = await Transaction.aggregate([
     {$match:{
+        user:new ObjectId(user),
        createdAt:{$gte: new Date(startof),$lt:new Date(endof)},
        cashIn:true,
     }},
@@ -112,9 +114,9 @@ const totalCashInAndOut = {
 
 
 const countTotal = async (filter)=>{
-  const {date} = filter
-  const {startof,endof,query} = getDesiredDate(date);
-    let unCategorizedQuery = {createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},
+  const {date,user} = filter
+  const {startof,endof,query} = getDesiredDate(date,user);
+    let unCategorizedQuery = {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},
                               category:null}
   const totalTransactionDetails = await Transaction.find(query)
   const unCategorizedTransactionDetails = await Transaction.find(unCategorizedQuery);
