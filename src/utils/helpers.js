@@ -5,7 +5,7 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const ApiError = require('./ApiError');
 const httpStatus = require('http-status');
-const sdk = require('api')('@okra/v2.0#b1cfdcbul447wikm');
+  const sdk = require('api')('@okra/v2.0#b1cfdcbul447wikm');
 const stripe = require('stripe')("sk_test_51KJuebHtbJyHQFQJL1OWBxK2numyPgWsaF6nCZSVMCDb11AFezCZTUTZHuUl5wAWl51N439WuLWgssgfQ8hwzslF00wNKONZEN")
 
 const accountSid = 'AC1a4fefaa7a75890832e86f7f165dab72'; 
@@ -74,11 +74,24 @@ client.messages
       .done();
 }
 
-const verifyNuban = async (params)=>{
-
+const verifyNubanviaOkra = async (params)=>{
+  console.log(process.env.OKRA_TOKEN);
   sdk.auth('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mjg2MjI2N2EzNDllMTg3NmY0Mzg4MzEiLCJpYXQiOjE2NTM0ODUzMjh9.GitNVGd2xlH1M4w9vYuH8qh--80Auq_AxwGGAZnnv7Q');
   sdk.NubanVerify(params,{Accept: 'application/json; charset=utf-8'})
-  .then(res => console.log(res))
+  .then(res => { console.log(res)
+        return res;
+    })
+  .catch(err => console.error(err));
+}
+
+const getTransactionsFromBank = async(params)=>{
+sdk.auth('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mjg2MjI2N2EzNDllMTg3NmY0Mzg4MzEiLCJpYXQiOjE2NTM0ODUzMjh9.GitNVGd2xlH1M4w9vYuH8qh--80Auq_AxwGGAZnnv7Q');
+sdk.Gettransactionbynuban(params, {
+  Accept: 'application/json; charset=utf-8'
+})
+  .then( res =>{ console.log(res)
+      return res;
+    })
   .catch(err => console.error(err));
 }
 
@@ -86,6 +99,7 @@ module.exports = {
   uploadToAws,
   deleteFromAWS,
   sendOTPviaSMS,
-  verifyNuban,
+  verifyNubanviaOkra,
+  getTransactionsFromBank,
 
 };

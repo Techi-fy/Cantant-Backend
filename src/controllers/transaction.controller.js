@@ -3,7 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { transactionService } = require('../services');
-// const { uploadToAws } = require('../utils/helpers');
+const { getTransactionsFromBank } = require('../utils/helpers');
 const EVENT = require('../triggers/custom-events').customEvent;
 // const { NOTIFICATION_TYPE } = require('../utils/enums');
 // const {roleAuthorization,getUserIdFromToken}=require('../middlewares/auth');
@@ -11,9 +11,7 @@ const { Product } = require('../models');
 
 const createTransaction = catchAsync(async (req,res)=>{
     const body = req.body;
-    const user =  req.query.userId 
                   // || await getUserIdFromToken(req);
-    body.user = user
     const transaction = await transactionService.createTransaction( body );
     // EVENT.emit('add-transaction-user',{
     //     userId,
@@ -86,6 +84,14 @@ const transaction = await transactionService.deleteTransactionById(req.query.tra
 res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getAndSaveTransaction = catchAsync(async (req,res)=>{
+  const transactions = await getTransactions(req.body);
+  transactions.map(transaction=>{
+    transaction
+  })
+  res.status(httpStatus.OK).send({status:true,nubanVerified})
+})
+
 module.exports = {
   createTransaction,
   queryTransaction,
@@ -96,5 +102,7 @@ module.exports = {
   graphProfitTransaction,
   updateTransaction,
   deleteTransaction,
+  getAndSaveTransaction,
+
 
 }

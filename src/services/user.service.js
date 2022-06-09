@@ -58,8 +58,8 @@ const updateUserByEmail= async(email,password) => {
   return await User.findOneAndUpdate({email:email},{"password":password});
 }
 
-const getUserByAddress = async (address) => {
-  return User.findOne({ address }).lean();
+const getUserByPhoneNumber = async (phone_number) => {
+  return await User.findOne({ phone_number }).select('+password');
 };
 
  /**
@@ -217,7 +217,7 @@ module.exports = {
   getUserByToken,
   updateUserById,
   deleteUserById,
-  getUserByAddress,
+  getUserByPhoneNumber,
   addArtworkToFavourites,
   removeArtworkFromFavourite,
   getFavouriteArtworks,

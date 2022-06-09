@@ -135,7 +135,7 @@ const graphTransaction = async (query)=>{
   const dateSet = moment().set({'year':year,'month':query.month});
   
   if(query.year){
-    startof = moment().startOf('year')
+    startof = moment(dateSet).startOf('year')
     endof = moment(dateSet).endOf('year')
   }
   aggregationMatchQuery = {"user":new ObjectId(`${user}`),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)}}
@@ -184,15 +184,15 @@ const reports = async (query)=>{
   let {user} = query
   const dateSet = moment().set({'year':query.year,'month':query.month});
   if(query.year){
-    startof = moment().startOf('year')
+    startof = moment(dateSet).startOf('year')
     endof = moment(dateSet).endOf('year')
   }
   if(query.year && query.month){
-    startof = moment().startOf('month')
+    startof = moment(dateSet).startOf('month')
     endof = moment(dateSet).endOf('month')
   }
   if(query.year && query.month && query.date){
-    startof = moment().startOf('date');
+    startof = moment(dateSet).startOf('date');
     endof = moment(dateSet).endOf('date');
   }
   if(query.cashIn){
@@ -210,7 +210,9 @@ const reports = async (query)=>{
     transactionQuery =  {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()}}
     aggregationMatchQuery = {"user":new ObjectId(user),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)}}
   }
-  
+  console.log("aggregation",aggregationMatchQuery);
+  console.log("transactions",transactionQuery);
+
    let transactions = await Transaction.find(transactionQuery)
   let cashInSum = 0
   let cashOutSum = 0

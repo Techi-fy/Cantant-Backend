@@ -13,14 +13,14 @@ const register = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
-  const { email,password } = req.body;
+  const { phone_number,password } = req.body;
   var user;
-   if(email != undefined && password != undefined ){
-    user = await authService.loginUserWithEmailAndPassword(email,password)
+   if(phone_number != undefined && password != undefined ){
+    user = await authService.loginUserWithPhoneAndPassword(phone_number,password);
   }
-  if(user.isEmailVerified == false){
-    throw new ApiError(httpStatus.BAD_REQUEST,'Please Verify Your Email');
-  }
+  // if(user.isPhoneVerified == false){
+  //   throw new ApiError(httpStatus.BAD_REQUEST,'Please Verify Your Phone Number');
+  // }
   if (user){
     // await tokenService.removeToken(user);
     // const tokens = await tokenService.generateAuthTokens(user);
