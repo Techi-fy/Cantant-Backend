@@ -29,6 +29,10 @@ const envVarsSchema = Joi.object()
     AWS_ACCESS_KEY_ID: Joi.string().description('aws access key'),
     AWS_SECRET_ACCESS_KEY: Joi.string().description('aws secret access key'),
     AWS_BUCKET: Joi.string().description('aws bucket'),
+    TWILIO_AUTH_TOKEN: Joi.string().description('Twilio '),
+    TWILIO_ACCOUNT_SID: Joi.string().description('Twilio '),
+    TWILIO_CANTANT_SERVICE_SID: Joi.string().description('Twilio '),
+    TWILIO_APP_KEY: Joi.string().description('Twilio ')
   })
   .unknown();
 
@@ -76,5 +80,11 @@ module.exports = {
     secretAccessKey: envVars.AWS_SECRET_ACCESS_KEY,
     bucket: envVars.AWS_BUCKET,
   },
+  twilio: {
+    authToken:envVars.TWILIO_AUTH_TOKEN,
+    accountSID:envVars.TWILIO_ACCOUNT_SID,
+    serviceSID:envVars.TWILIO_CANTANT_SERVICE_SID,
+    apiKey:envVars.TWILIO_APP_KEY
+  }
   
 };

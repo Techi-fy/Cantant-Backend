@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
-const {sendOTPviaSMS} = require('../utils/helpers')
+const {sendOTPviaSMS, sendOTPVerifyPhone, verifyPhoneCode} = require('../utils/helpers')
 const { checkAdminRole,getUserIdFromToken} = require('../middlewares/auth');
 const ApiError = require('../utils/ApiError');
 
@@ -147,6 +147,28 @@ const verifyPhone = catchAsync(async (req,res)=>{
   res.status(httpStatus.OK).send({status:true,message:`OTP sent to Phone Number:${phoneNumber} , Please check your SMS inbox!`})
 })
 
+const verifyPhoneTwilio = catchAsync(async (req,res)=>{
+  const {to,channel} = req.body;
+    const user = await userService.getUserByPhoneNumber(to);
+   const sendOTP = await sendOTPVerifyPhone(to,channel);
+   if(sendOTP.status == 'pending'){
+    res.status(httpStatus.OK).send({status:true,message:`OTP sent to Phone Number:${to} , Please check your SMS inbox!`})
+    }else{
+     res.status(httpStatus.INTERNAL_SERVER_ERROR).send({status:false,message:`Something went wrong while sending OTP`})
+   }
+});
+
+const verifyPhoneCodeTwilio = catchAsync(async (req,res)=>{
+  const {to,code} = req.body;
+   const phoneVerified = await verifyPhoneCode(to,code);
+   if(phoneVerified.status == 'approved'){
+      const user_update = await userService.updateUserByPhone(to,{isPhoneVerified:true})
+     res.status(httpStatus.OK).send({status:true,message:`Phone Number:${to} verified , Please check your SMS inbox!`})
+   }else{
+    res.status(httpStatus.BAD_REQUEST).send({status:false,message:"Entered wrong OTP or Internal Server Error"})
+   }
+});
+
 module.exports = {
   register,
   login,
@@ -159,4 +181,7 @@ module.exports = {
   verifyEmail,
   verifyPhone,
   sendVerificationEmail,
+  verifyPhoneTwilio,
+  verifyPhoneCodeTwilio,
+
 };

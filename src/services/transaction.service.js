@@ -14,6 +14,11 @@ const createTransaction = async (userBody) => {
       return transaction.toObject();
 };
 
+const createManyTransactions = async (transactions) => {
+      const transaction = await Transaction.insertMany(transactions);
+      return transaction.toObject();
+};
+
 /**
  * Query for users
  * @param {Object} filter - Mongo filter
@@ -305,6 +310,7 @@ const searchTransactionsByName = async (keyword, page, perPage) => {
 
 module.exports = {
   createTransaction,
+  createManyTransactions,
   queryTransactions,
   getTransactionById,
   updateTransactionById,

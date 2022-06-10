@@ -58,6 +58,10 @@ const updateUserByEmail= async(email,password) => {
   return await User.findOneAndUpdate({email:email},{"password":password});
 }
 
+const updateUserByPhone= async(phone_number  ,updateBody) => {
+  return await User.findOneAndUpdate({phone_number},updateBody,{new:true});
+}
+
 const getUserByPhoneNumber = async (phone_number) => {
   return await User.findOne({ phone_number }).select('+password');
 };
@@ -228,5 +232,6 @@ module.exports = {
   removeArtwork,
   searchUsersByName,
   saveForgotPasswordCode,
-  addCategories
+  addCategories,
+  updateUserByPhone
 };

@@ -279,4 +279,8 @@ router.post('/verify-email',
 
 router.post('/verify-code', validate(authValidation.verifyCode), authController.verifyCode);
 
+router.post('/send-otp-phone',  authController.verifyPhoneTwilio);
+
+router.post('/phone-verification',  authController.verifyPhoneCodeTwilio);
+
 module.exports = router;

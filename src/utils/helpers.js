@@ -5,13 +5,9 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const ApiError = require('./ApiError');
 const httpStatus = require('http-status');
-  const sdk = require('api')('@okra/v2.0#b1cfdcbul447wikm');
+const sdk = require('api')('@okra/v2.0#b1cfdcbul447wikm');
 const stripe = require('stripe')("sk_test_51KJuebHtbJyHQFQJL1OWBxK2numyPgWsaF6nCZSVMCDb11AFezCZTUTZHuUl5wAWl51N439WuLWgssgfQ8hwzslF00wNKONZEN")
-
-const accountSid = 'AC1a4fefaa7a75890832e86f7f165dab72'; 
-// const authToken = '[Redacted]';
-const authToken = 'a111283afa215463634e46891b8f4536';
-const client = require('twilio')(accountSid, authToken);
+const client = require('twilio')(config.twilio.accountSID, config.twilio.authToken);
 
 
 
@@ -61,6 +57,24 @@ const deleteFromAWS = (key) => {
   });
 };
 
+const sendOTPVerifyPhone = async (to,channel)=>{
+  const sendOTP = await client.verify.services('VA460d003c6f7870b0365a9fd59ec4dc46')
+               .verifications
+               .create({to , channel})
+              //  .then(verification => console.log("",verification.status));
+  return sendOTP;
+
+}
+
+const verifyPhoneCode = async (to,code)=>{
+  const phoneVerification = await client.verify.services('VA460d003c6f7870b0365a9fd59ec4dc46')
+      .verificationChecks
+      .create({to, code})
+      // .then(verification_check => console.log(verification_check.status));
+  
+  return phoneVerification;
+    }
+
 const sendOTPviaSMS = async (phoneNumber,OTP) =>{
 console.log('in');
 client.messages 
@@ -101,5 +115,7 @@ module.exports = {
   sendOTPviaSMS,
   verifyNubanviaOkra,
   getTransactionsFromBank,
+  sendOTPVerifyPhone,
+  verifyPhoneCode,
 
 };
