@@ -84,16 +84,7 @@ const transaction = await transactionService.deleteTransactionById(req.query.tra
 res.status(httpStatus.NO_CONTENT).send();
 });
 
-const getAndSaveTransaction = catchAsync(async (req,res)=>{
-  const transactions = await getTransactionsFromBank(req.body);
-  const editedTransactions = transactions.map(transaction=>{
-    transaction.type = 'bank'
-    transaction.amount = transaction.debit || transaction.credit
-  });
-  const createTransactions = await transactionService.createManyTransactions(editedTransactions);
-  console.log(createTransactions);
-  res.status(httpStatus.OK).send({status:true,nubanVerified});
-})
+
 
 module.exports = {
   createTransaction,
@@ -105,7 +96,6 @@ module.exports = {
   graphProfitTransaction,
   updateTransaction,
   deleteTransaction,
-  getAndSaveTransaction,
 
 
 }

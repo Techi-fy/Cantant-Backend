@@ -1,19 +1,17 @@
 
 const cron = require('node-cron');
-const { auctionService, raffleService } = require('../services');
+const { transactionService } = require('../services');
 const config = require('../config/config');
 const logger = require('../config/logger');
 
 module.exports = () => {
-  
-  // var nodeCron = cron.schedule('* * * * *', async () => {
-  // console.log('cronjob ready for launching Auction Winner');
-  // auctionService.checkAndCompleteAuctionStatus();
+
+  // var nodeCron = cron.schedule('0 0 */1 * * *', async () => {
+  // console.log('cronjob ready for fetching transactions');
+  // transactionService.get();
   // console.log('-----------------------------------------');
-  // console.log('cronjob ready for launching Raffle Winner');
-  // raffleService.checkRaffleWinnerAndStatus();
-// });
-}
+  
+};
 // const mongoose = require('mongoose');
 
 // mongoose.set('useFindAndModify', false);

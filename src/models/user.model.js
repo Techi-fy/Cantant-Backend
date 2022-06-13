@@ -93,6 +93,7 @@ const userSchema = mongoose.Schema(
       ref:'Bank'
     },
     transaction_categories:[String],
+    nuban:Number,
     nubanVerified:Boolean,
     isblock: { type: Boolean, default: false },
     code: { type: String },

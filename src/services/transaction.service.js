@@ -2,7 +2,6 @@ const httpStatus = require('http-status');
 const { Transaction } = require('../models');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { transactionService } = require('.');
 var ObjectId = require('mongodb').ObjectID;
 /**
  * 
@@ -137,7 +136,7 @@ const graphTransaction = async (query)=>{
   let endof;
   let aggregationMatchQuery = {};
   const {cashIn,cashOut,year,user} = query;
-  const dateSet = moment().set({'year':year,'month':query.month});
+  const dateSet = moment().set({'year':year,'month':query.month - 1});
   
   if(query.year){
     startof = moment(dateSet).startOf('year')
@@ -186,8 +185,10 @@ const reports = async (query)=>{
   let endof;
   let aggregationMatchQuery = {};
   let transactionQuery = {}
-  let {user} = query
-  const dateSet = moment().set({'year':query.year,'month':query.month});
+  let { user } = query;
+     let countTotalTransactions = await Transaction.countDocuments({user});
+     
+  const dateSet = moment().set({'year':query.year,'month':query.month - 1});
   if(query.year){
     startof = moment(dateSet).startOf('year')
     endof = moment(dateSet).endOf('year')
@@ -204,11 +205,13 @@ const reports = async (query)=>{
     // console.log("cashIn",query.cashIn);
      transactionQuery = {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},cashIn:true}
       aggregationMatchQuery = {"user":new ObjectId(user),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashIn":true}
+      countTotalTransactions = await Transaction.countDocuments({user,cashIn:true})
     }
   if(query.cashOut){
     // console.log("cashOut",query.cashOut);
      transactionQuery = {user,createdAt:{$gte:new Date(startof).toISOString(),$lt:new Date(endof).toISOString()},cashOut:true};
      aggregationMatchQuery = {"user":new ObjectId(user),"createdAt":{$gte:new Date(startof),$lt:new Date(endof)},"cashOut":true}
+     countTotalTransactions = await Transaction.countDocuments({user,cashOut:true})
     }
   if(!query.cashIn && !query.cashOut){
     // console.log("Cashflow")
@@ -231,7 +234,7 @@ const reports = async (query)=>{
     }
     
     const totalProfit = cashInSum - cashOutSum
-    const nums = await Transaction.countDocuments()
+    console.log(countTotalTransactions);
     const ranking = await Transaction.aggregate(
       [
         {
@@ -248,7 +251,7 @@ const reports = async (query)=>{
             "$project": {
               "count": 1,
             "percentage": {
-                     "$multiply":[{"$divide":["$count",{"$literal": nums }]},100]
+                     "$multiply":[{"$divide":["$count",{"$literal": countTotalTransactions }]},100]
                         }, 
             "totalAmount":1 
           }},
@@ -306,7 +309,16 @@ const searchTransactionsByName = async (keyword, page, perPage) => {
     .skip(page * perPage);
 };
 
-
+const getAndSaveTransaction = async (params)=>{
+  const transactions = await getTransactionsFromBank(req.body);
+  const editedTransactions = transactions.map(transaction=>{
+    transaction.type = 'bank'
+    transaction.amount = transaction.debit || transaction.credit
+  });
+  const createTransactions = await transactionService.createManyTransactions(editedTransactions);
+  console.log(createTransactions);
+  res.status(httpStatus.OK).send({status:true,nubanVerified});
+}
 
 module.exports = {
   createTransaction,
@@ -321,5 +333,7 @@ module.exports = {
   countTransactions,
   reports,
   graphTransaction,
-  countTotal
+  countTotal,
+  getAndSaveTransaction,
+
 }
