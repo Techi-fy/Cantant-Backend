@@ -136,8 +136,7 @@ const graphTransaction = async (query)=>{
   let endof;
   let aggregationMatchQuery = {};
   const {cashIn,cashOut,year,user} = query;
-  const dateSet = moment().set({'year':year,'month':query.month - 1});
-  
+  const dateSet = moment().set({'year':year});
   if(query.year){
     startof = moment(dateSet).startOf('year')
     endof = moment(dateSet).endOf('year')
