@@ -1,7 +1,9 @@
 const httpStatus = require('http-status');
-const { Transaction } = require('../models');
+const { Transaction, User } = require('../models');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
+const { userService } = require('../models/');
+const { getTransactionsByNuban,getTransactionsByCustomerId } = require('../utils/helpers');
 var ObjectId = require('mongodb').ObjectID;
 /**
  * 
@@ -308,8 +310,13 @@ const searchTransactionsByName = async (keyword, page, perPage) => {
     .skip(page * perPage);
 };
 
-const getAndSaveTransaction = async (params)=>{
-  const transactions = await getTransactionsFromBank(req.body);
+const getAndSaveTransaction = async (userId)=>{
+  const user = await User.findById({userId});
+  let transactions = [];
+  if(user.customerId){
+    
+  }
+   transactions = await getTransactionsFromBank(user.customerId);
   const editedTransactions = transactions.map(transaction=>{
     transaction.type = 'bank'
     transaction.amount = transaction.debit || transaction.credit

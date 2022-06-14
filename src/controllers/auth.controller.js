@@ -24,11 +24,12 @@ const login = catchAsync(async (req, res) => {
   if (user){
     // await tokenService.removeToken(user);
     // const tokens = await tokenService.generateAuthTokens(user);
-    res.send({
+    res.write({
       status: true,
       user:user._id,
       // tokens
     });
+    res.end()
   } else {
     res.send({
       status: false,

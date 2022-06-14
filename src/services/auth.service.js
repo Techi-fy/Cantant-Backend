@@ -16,7 +16,7 @@ const { tokenTypes } = require('../config/tokens');
 const loginUserWithPhoneAndPassword = async (phone_number, password) => {
   var user = await userService.getUserByPhoneNumber(phone_number);
   if (!user || !(await user.isPasswordMatch(password))) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect phone or password');
   }
   if ('isblock' in user) {
     if (user.isblock === true) {
@@ -86,7 +86,6 @@ const changePassword = async (user,body)=>{
   if(!(await getuser.isPasswordMatch(body.currentPassword))){
       throw new ApiError(httpStatus.UNAUTHORIZED,'Current Password Incorrect')
   }else{
-    console.log("Iam In 92authService")
     const updatedUser = await userService.updateUserById(user,{password:body.newPassword});
     return updatedUser;
   }

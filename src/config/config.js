@@ -32,7 +32,9 @@ const envVarsSchema = Joi.object()
     TWILIO_AUTH_TOKEN: Joi.string().description('Twilio '),
     TWILIO_ACCOUNT_SID: Joi.string().description('Twilio '),
     TWILIO_CANTANT_SERVICE_SID: Joi.string().description('Twilio '),
-    TWILIO_APP_KEY: Joi.string().description('Twilio ')
+    TWILIO_APP_KEY: Joi.string().description('Twilio '),
+    OKRA_TOKEN: Joi.string().description('Okra Auth Token '),
+  
   })
   .unknown();
 
@@ -85,6 +87,9 @@ module.exports = {
     accountSID:envVars.TWILIO_ACCOUNT_SID,
     serviceSID:envVars.TWILIO_CANTANT_SERVICE_SID,
     apiKey:envVars.TWILIO_APP_KEY
+  },
+  okra:{
+    authToken:envVars.OKRA_TOKEN
   }
   
 };

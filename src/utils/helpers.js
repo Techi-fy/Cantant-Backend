@@ -8,6 +8,7 @@ const httpStatus = require('http-status');
 const sdk = require('api')('@okra/v2.0#b1cfdcbul447wikm');
 const stripe = require('stripe')("sk_test_51KJuebHtbJyHQFQJL1OWBxK2numyPgWsaF6nCZSVMCDb11AFezCZTUTZHuUl5wAWl51N439WuLWgssgfQ8hwzslF00wNKONZEN")
 const client = require('twilio')(config.twilio.accountSID, config.twilio.authToken);
+const fetch = require('node-fetch');
 
 
 
@@ -89,8 +90,7 @@ client.messages
 }
 
 const verifyNubanviaOkra = async (params)=>{
-  console.log(process.env.OKRA_TOKEN);
-  sdk.auth('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mjg2MjI2N2EzNDllMTg3NmY0Mzg4MzEiLCJpYXQiOjE2NTM0ODUzMjh9.GitNVGd2xlH1M4w9vYuH8qh--80Auq_AxwGGAZnnv7Q');
+  sdk.auth(config.okra.authToken);
   sdk.NubanVerify(params,{Accept: 'application/json; charset=utf-8'})
   .then(res => { console.log(res)
         return res;
@@ -98,8 +98,9 @@ const verifyNubanviaOkra = async (params)=>{
   .catch(err => console.error(err));
 }
 
-const getTransactionsFromBank = async(params)=>{
-sdk.auth('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mjg2MjI2N2EzNDllMTg3NmY0Mzg4MzEiLCJpYXQiOjE2NTM0ODUzMjh9.GitNVGd2xlH1M4w9vYuH8qh--80Auq_AxwGGAZnnv7Q');
+const getTransactionsByNuban = async(params)=>{
+sdk.auth(config.okra.authToken);
+if(params.nuban){
 sdk.Gettransactionbynuban(params, {
   Accept: 'application/json; charset=utf-8'
 })
@@ -107,6 +108,26 @@ sdk.Gettransactionbynuban(params, {
       return res;
     })
   .catch(err => console.error(err));
+  }
+}
+
+const getTransactionsByCustomerId = async ()=>{
+
+
+const url = 'https://api.okra.ng/v2/sandbox/transactions/getByCustomer';
+const options = {
+  method: 'POST',
+  headers: {
+    Accept: 'application/json; charset=utf-8',
+    'Content-Type': 'application/json',
+    Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2Mjg2MjI2N2EzNDllMTg3NmY0Mzg4MzEiLCJpYXQiOjE2NTM0ODUzMjh9.GitNVGd2xlH1M4w9vYuH8qh--80Auq_AxwGGAZnnv7Q'
+  }
+};
+
+fetch(url, options)
+  .then(res => res.json())
+  .then(json => console.log(json))
+  .catch(err => console.error('error:' + err));
 }
 
 module.exports = {
@@ -114,7 +135,8 @@ module.exports = {
   deleteFromAWS,
   sendOTPviaSMS,
   verifyNubanviaOkra,
-  getTransactionsFromBank,
+  getTransactionsByNuban,
+  getTransactionsByCustomerId,
   sendOTPVerifyPhone,
   verifyPhoneCode,
 
